@@ -1,0 +1,3 @@
+# Water
+
+Water (chemical formula H2O) is an [inorganic](/wiki/Inorganic_compound), transparent, tasteless, odorless, and nearly colorless [chemical substance](/wiki/Chemical_substance), which is the main constituent of Earth's hydrosphere and the fluids of all known living organisms (in which it acts as a solvent[1]). It is vital for all known forms of life, even though it provides neither food, energy, nor organic micronutrients. Its chemical formula, H2O, indicates that each of its molecules contains one oxygen and two hydrogen atoms, connected by covalent bonds. The hydrogen atoms are attached to the oxygen atom at an angle of 104.45°.

@@ -1,0 +1,16 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Encyclopedia
+{% endblock %}
+
+{% block body %}
+	<label class="h1">Page doesn't exist</label>
+	<div>
+		<label class="body">{{entry_title|safe}} was not found!</label>
+	</div>
+   
+	<div>
+		<a href="{% url 'new_entry' %}">Create this page</a>
+	</div>
+{% endblock %}
