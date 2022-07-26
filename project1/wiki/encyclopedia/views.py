@@ -95,8 +95,8 @@ def new_entry(request):
 def save_new_entry(request):
     if request.method == 'POST':
         # new entry inputs
-        input_title = request.POST['title']
-        input_content = request.POST['content']
+        input_title = request.POST['entry_title']
+        input_content = request.POST['entry_content']
 
         # title for new entry
         new_entry_html = convert_to_html(input_title)
@@ -152,8 +152,8 @@ def edit_entry(request):
 # for saving the edited entry
 def save_edit(request):
     if request.method == 'POST':
-        entry_title = request.POST['title']
-        entry_content = request.POST['content']
+        entry_title = request.POST['entry_title']
+        entry_content = request.POST['entry_content']
 
         util.save_entry(entry_title, entry_content)
         edited_entry_html = convert_to_html(entry_title)
