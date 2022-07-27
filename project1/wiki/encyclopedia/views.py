@@ -1,9 +1,5 @@
-from asyncio.windows_events import NULL
 from django.shortcuts import render
-
-# importing the function Marcdown() whick converts md to html
-from markdown2 import Markdown
-markdowner = Markdown()
+from django.contrib import messages
 
 from . import util
 
@@ -77,14 +73,14 @@ def search(request):
             
             # if does not found exact same entry it will list all found entries
             elif found_entries != []:
-                return render(request, "encyclopedia/entry.html", {
+                return render(request, "encyclopedia/search.html", {
                     "entries": found_entries
                 })
 
             # if no entries were found
             else:
                 return render(request, "encyclopedia/not_found_entry.html", {
-                    "entry_title": search_input
+                    "entry_ title": search_input
                 })
 
 # for rendering the new entry page
@@ -112,6 +108,7 @@ def save_new_entry(request):
 
         # if new entry already exists
         if already_existing_entry == True:
+            messages.info(request, 'Error. The page already exists!')
             return render(request, "encyclopedia/already_existing_entry.html", {
                 "entry": new_entry_html,
                 "entry_title": input_title
@@ -152,7 +149,7 @@ def edit_entry(request):
 # for saving the edited entry
 def save_edit(request):
     if request.method == 'POST':
-        entry_title = request.POST['entry_title']
+        entry_title = request.POST['title']
         entry_content = request.POST['entry_content']
 
         util.save_entry(entry_title, entry_content)
