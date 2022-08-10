@@ -1,0 +1,42 @@
+{# setting the form action into a post method because the act of summiting this form will alter data server-side #}
+{# this post method will be using vote view #}
+<form action="{% url 'pollsWhitGenericVws:vote' question.id %}" method="post">
+
+    {# all POST forms that are targeted at internal URLs should use the {% csrf_token %} template tag #}
+    {% csrf_token %} 
+    <fieldset>
+        {# question.question_text references a particular question #}
+        <legend><h1>{{ question.question_text }}</h1>
+        </legend>
+        {% if error_message %}<p><strong>{{ error_message }}
+        </strong></p>{% endif %} 
+        {% for choice in question.choice_set.all %}
+            {# -The value of each radio button is the associated question choice’s ID #} 
+            {# -The name of each radio button "choice" when somebody selects one of the radio buttons and #}
+            {# submits the form , it’ll send the POST data choice=# where # is the ID of the selected choice #}
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+            
+            {# forloop.counter indicates how many times the for tag has gone through its loop #}
+            <label for="choice{{ forloop.counter }}">
+                {{ choice.choice_text }}
+            </label><br>
+            {% endfor %}
+    </fieldset>
+    <input type="submit" value="Vote">
+</form>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+{# question.question_text references a particular question #}
+<h1>{{ question.question_text }}</h1>
+<ul>
+{# this "for" will list the options inside or linked to a particular question #}
+{% for choice in question.choice_set.all %} 
+    {# this list will display all the options inside the question #}
+    <li>{{ choice.choice_text }}</li>
+{% endfor %}
+</ul>
