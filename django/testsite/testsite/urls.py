@@ -21,3 +21,8 @@ urlpatterns = [
     path('polls/', include('polls.urls')),
     path('pollsWhitGenericVws/', include('pollsWhitGenericVws.urls')),
 ]
+
+# This will change the text in djando admin site for headers, titles and index
+admin.site.site_header = 'Polls Administration Admin Panel'
+admin.site.site_title = 'Polls Administration Title'
+admin.site.index_title = 'Polls Administration Index'
