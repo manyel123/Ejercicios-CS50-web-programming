@@ -13,8 +13,10 @@ def index(request):
     # the context is a dictionary mapping TEMPLATE VARIABLE names to python objects
     context = {'latest_question_list':latest_question_list,}
 
-    ''' the render function takes the request object as first argument, a template name as 
-    second argument and a dictionary as its optional third argument  '''
+    ''' 
+    the render function takes the request object as first argument, a template name as 
+    second argument and a dictionary as its optional third argument 
+    '''
     return render(request, 'polls/index.html', context)
 
 def detail(request, question_id):
