@@ -12,7 +12,9 @@
         <div class="row">
             <div class="sidebar col-lg-2 col-md-3">
                 <h2>Wiki</h2>
+                {# this form display a search bar #}
                 <form action="{% url 'search' %}" method="GET">
+                    {# the search is completed using "views.search" saved as url in urls.py #}
                     <input class="search" type="text" name="q" placeholder="Search Encyclopedia">
                 </form>
                 <div>

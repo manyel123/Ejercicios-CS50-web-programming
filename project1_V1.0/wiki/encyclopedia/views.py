@@ -5,6 +5,7 @@ import markdown
 import random
 
 entries_list = util.list_entries()
+upper_entries_list = []
 
 # this function will return a list of all entries
 def index(request):
@@ -17,16 +18,25 @@ def index(request):
         'entries':entries_list
     })
 
-# when is called this function will update the entries list
+# when called, this function will update the entries list
 def update_entries_list():
     global entries_list
     entries_list = util.list_entries()
 
+# when called, this function will update all upper entries
+def update_upper_entries_list():
+    update_entries_list()
+    global upper_entries_list
+    for e in entries_list:
+        upper_entries_list.append(e.upper())
+
 # this function will return a particular entry
 def entry(request, title):
-    update_entries_list()
-    # if the entry title given doesn't exists a "not found" page will be displayed
-    if title not in entries_list:
+    update_upper_entries_list()
+    # if the entry title given doesn't exists a "not found" page will be displayed,
+    # title and entries list are compared in uppercase for displaying an entry
+    # no matter the input format in the link
+    if title.upper() not in upper_entries_list:
         return render(request, "encyclopedia/not_found.html")
     # if the given entry exist it will be displayed
     else:

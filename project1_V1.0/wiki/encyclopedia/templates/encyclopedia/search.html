@@ -7,6 +7,8 @@
 {% block body %}
     <h1>Results similar to your search</h1>
 
+    {# a list of similar entries will be displayed after a partial match #}
+    {# if there is an exact match it will display the entry instead(from layout.html) #}
     <ul>
         {% for e in results %}
             <li><a href="wiki/{{ e }}">{{ e }}</a></li>

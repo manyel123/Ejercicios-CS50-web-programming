@@ -6,9 +6,10 @@
 
 {% block body %}
     <h1>All Pages</h1>
-
+    {# if there are any entries to display #}
     {% if entries %}
     <ul>
+        {# the list of entries will be displayed and able to be access as links #}
         {% for entry in entries %}
             <li><a href="wiki/{{ entry }}">{{ entry }}</a></li>
         {% endfor %}

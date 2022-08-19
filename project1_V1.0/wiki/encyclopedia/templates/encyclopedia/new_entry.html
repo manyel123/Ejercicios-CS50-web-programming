@@ -6,14 +6,16 @@
 
 {% block body %}
     <h1>Submit a new page for encyclopedia</h1>
-
+    {# this form submit a new entry using "views.save_new_entry" saved as url in urls.py #}
     <form action="{% url 'save_new_entry' %}" method="POST">
         {% csrf_token %}
         <label class="form-titles">New page title</label>
         <br>
+        {# this title will be the name of the markdown file #}
         <input type="text" name ="entry_title">
         <br>
         <br>
+        {# the content should also include the title and content in markdown language #}
         <label class="advice">Please make use of markdown language for saving a new page.
         <br>
         <textarea id="content" name="content" cols="100"></textarea>

@@ -1,17 +1,21 @@
 {% extends "encyclopedia/layout.html" %}
 
 {% block title %}
+    {# display entries title given by entry.html after pressint the button "Edit" #}
     Edit {{ entry_title }}
 {% endblock %}
 
 {% block body %}
     <h1>Edit {{ entry_title }}</h1>
 
+    {# once editing is done, the new content is saved making use of "views.save_edit" #}
     <form action="{% url 'save_edit' %}" method="POST">
         {% csrf_token %}
         <label class="advice">Please keep markdown language format.
+        {# keeping entry_title hiden will avoid users to edit the entry title #}
         <input type="hidden" name="entry_title" value="{{ entry_title }}">
         <br>
+        {# the content is displayed in a textarea to be edited by users #}
         <textarea id="content" name="content" cols="100">{{ content }}</textarea>
         <br>
         <input type="submit" value="Save">

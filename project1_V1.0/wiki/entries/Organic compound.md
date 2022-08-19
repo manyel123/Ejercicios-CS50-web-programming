@@ -1,3 +1,2 @@
-# Organic compound
-
+# Organic compound
 In [chemistry](/wiki/Chemistry), organic compounds are generally any chemical compounds that contain carbon-hydrogen or carbon-carbon bonds. Due to carbon's ability to catenate (form chains with other carbon atoms), millions of organic compounds are known. The study of the properties, reactions, and syntheses of organic compounds comprise the discipline known as organic chemistry. For historical reasons, a few classes of carbon-containing compounds (e.g., carbonate salts and cyanide salts), along with a few other exceptions (e.g., carbon dioxide), are not classified as organic compounds and are considered inorganic. Other than those just named, little consensus exists among chemists on precisely which carbon-containing compounds are excluded, making any rigorous definition of an organic compound elusive.

@@ -1,11 +1,17 @@
 {% extends "encyclopedia/layout.html" %}
 
 {% block title %}
+    {# display entries title given by views.entry #}
     {{ entry_title }}
 {% endblock %}
 
 {% block body %}
+    {# display markdown content converted into html #}
     {{ entry|safe }}
+
+    {# this form display a button for editing the current entry #}
+    {# the "entry_title" of the entry to be edited, is captured #}
+    {# and sent to "edit_entry" after pressing "Edit" button #}
     <form action="{% url 'edit_entry' %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="entry_title" value="{{ entry_title }}">
