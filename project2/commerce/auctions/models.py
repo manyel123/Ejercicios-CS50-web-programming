@@ -9,9 +9,14 @@ class User(AbstractUser):
     password    = models.CharField('password', max_length=256)
     email       = models.EmailField('email', max_length=100)
 
+
 class Category(models.Model):
     id              = models.AutoField(primary_key=True)
     name   = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
 
 class Listing(models.Model):
     id              = models.AutoField(primary_key=True)
@@ -23,6 +28,9 @@ class Listing(models.Model):
     is_active       = models.BooleanField(default=True)
     category_id     = models.ForeignKey(Category, related_name='category', on_delete=models.DO_NOTHING, default=NULL, db_constraint=False)
     initial_bid     = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    def __str__(self):
+        return self.title
+
 
 class Watchlist(models.Model):
     id                = models.AutoField(primary_key=True)
@@ -30,12 +38,14 @@ class Watchlist(models.Model):
     listing_id        = models.ForeignKey(Listing, related_name='watched_list', on_delete=models.CASCADE)
     watched           = models.BooleanField(default=False)
 
+
 class Comments(models.Model):
     id              = models.AutoField(primary_key=True)
     user            = models.ForeignKey(User, related_name='comments', on_delete=models.CASCADE)
     listing         = models.ForeignKey(Listing, related_name='listing_comments', on_delete=models.CASCADE)
     comment         = models.TextField(max_length=300)
     comment_date    = models.DateTimeField(auto_now_add=True, blank=True)
+
 
 class Bid(models.Model):
     id          = models.AutoField(primary_key=True)
