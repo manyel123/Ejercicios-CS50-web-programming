@@ -33,17 +33,24 @@
     <p><small>{{ bid_count }} bid{{ bid_count|pluralize }} so far. 
         {% if max_bid_user %} Your bid is the current bid. {% endif %}
     </small></p>
+    {% if max_bid_user %}
+        {% if winner %}
+            <h2>You have won this listing!</h2>
+        {% endif %}
+    {% endif %}
 </div>
 <div>
     {% if not is_creator or not user_logedin %}
-    <form action="{% url 'new_bid' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <input type="hidden" name="listing_id" value="{{ listing.id }}">
-            <input autofocus class="form-control" type="text" name="bid_amount" placeholder="Bid">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Place Bid">
-    </form>
+        {% if not active %}
+        <form action="{% url 'new_bid' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <input autofocus class="form-control" type="text" name="bid_amount" placeholder="Bid">
+            </div>
+            <input class="btn btn-primary" type="submit" value="Place Bid">
+        </form>
+        {% endif %}
     {% endif %}
     {% if is_creator and user_logedin %}
     <form action="{% url 'close_listing' %}" method="post">
@@ -61,4 +68,7 @@
     <li>Listed by: {{ listing.user_id }}</li>
     <li>Category: {{ listing.category_id }}</li>
 </ul>
+<h3>Comments:</h3>
+{% for c in comments %}
+{% endfor %}
 {% endblock %}

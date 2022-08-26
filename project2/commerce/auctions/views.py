@@ -21,12 +21,12 @@ def get_all_watchlists():
     return Watchlist.objects.all()
 
 
-# returns object id
+# returns object id from POST
 def get_listing_id(request):
     return request.POST["listing_id"]
 
 
-# returns the whole object
+# returns the whole object from POST
 def get_listing_obj(request):
     return Listing.objects.get(id=request.POST.get('listing_id'))
 
@@ -35,10 +35,23 @@ def get_active_listings():
     return Listing.objects.filter(is_active=True)
 
 
+def get_inactive_listings():
+    return Listing.objects.filter(is_active=False)
+
+
 def index(request):
-    active_listings = get_all_listings()
+    active_listings = get_active_listings()
     return render(request, "auctions/index.html", {
-        'listings': active_listings
+        'listings': active_listings,
+        'active': "display"
+    })
+
+
+def closed_listings(request):
+    inactive_listings = get_inactive_listings()
+    return render(request, "auctions/index.html", {
+        'listings': inactive_listings,
+        'inactive': "display"
     })
 
 
@@ -123,7 +136,8 @@ def listing_detail(request, pk):
     #if request.user.is_authenticated:
 
     # if listing exist
-    if Listing.objects.filter(id=pk):   
+    if Listing.objects.filter(id=pk):  
+
         max_bid_info = get_max_bid(pk)
         max_bid = max_bid_info[0]
         max_bid_user = max_bid_info[1]
@@ -131,94 +145,119 @@ def listing_detail(request, pk):
         # getting current listing
         current_listing = Listing.objects.get(id=pk) 
 
-        # to check if current user is the listing creator to be able to close the listing
-        # if listing exist and current user is the creator of the listing
-        if request.user == current_listing.user_id:
-            print("creator")
-            # if listing exists and current user is the creator and is watched by him
-            if is_watched(request, pk) == True:
-                print("if")
-                return render(request, "auctions/listing_detail.html", {
-                    "listing": Listing.objects.get(id=pk),
-                    "pk": pk,
-                    "max_bid": max_bid,
-                    "bid_count": bid_count,
-                    "user_logedin": "True",
-                    "is_creator": "True",
-                    "message_iw": "is_watched"
-                })
-            # if listing exists and current user is the creator and IS NOT watched by him
-            elif is_watched(request, pk) == False:
-                print("elif")
-                return render(request, "auctions/listing_detail.html", {
-                    "listing": Listing.objects.get(id=pk),
-                    "pk": pk,
-                    "max_bid": max_bid,
-                    "bid_count": bid_count,
-                    "user_logedin": "True",
-                    "is_creator": "True",
-                    "message_inw": "is_not_watched"
-                })
+        # if the current list exists and is active
+        if current_listing.is_active == True:  
 
-        # to check if the current user has the hightest bid
-        # if listing exist and current user has the highest bid
-        if max_bid_user == request.user:
-            # if listing exist and current user has the highest bid and is watched by him
-            if is_watched(request, pk) == True:
-                print("if_max")
-                return render(request, "auctions/listing_detail.html", {
-                    "listing": Listing.objects.get(id=pk),
-                    "pk": pk,
-                    "max_bid": max_bid,
-                    "bid_count": bid_count,
-                    "max_bid_user": "is_max_bid_user",
-                    "user_logedin": "True",
-                    "message_iw": "is_watched"
-                })
-            # if listing exist and current user has the highest bid and is NOT watched by him
-            elif is_watched(request, pk) == False:
-                print("elif_max")
-                return render(request, "auctions/listing_detail.html", {
-                    "listing": Listing.objects.get(id=pk),
-                    "pk": pk,
-                    "max_bid": max_bid,
-                    "bid_count": bid_count,
-                    "max_bid_user": "is_max_bid_user",
-                    "user_logedin": "True",
-                    "message_inw": "is_not_watched"
-                })
-        # if listing exist and current user HAS NOT the highest bid and is watched by him
-        else:
-            if is_watched(request, pk) == True:
-                print("if")
-                return render(request, "auctions/listing_detail.html", {
-                    "listing": Listing.objects.get(id=pk),
-                    "pk": pk,
-                    "max_bid": max_bid,
-                    "bid_count": bid_count,
-                    "user_logedin": "True",
-                    "message_iw": "is_watched"
-                })
-            # if listing exist and current user HAS NOT the highest bid and is NOT watched by him
-            elif is_watched(request, pk) == False:
-                print("elif")
-                return render(request, "auctions/listing_detail.html", {
-                    "listing": Listing.objects.get(id=pk),
-                    "pk": pk,
-                    "max_bid": max_bid,
-                    "bid_count": bid_count,
-                    "user_logedin": "True",
-                    "message_inw": "is_not_watched"
-                })
-            # if listing exist and THERE IS NOT current user(is not logged in)
+            # to check if current user is the listing creator to be able to close the listing
+            # if listing exist and current user is the creator of the listing
+            if request.user == current_listing.user_id:
+                print("creator")
+                # if listing exists and current user is the creator and is watched by him
+                if is_watched(request, pk) == True:
+                    print("if")
+                    return render(request, "auctions/listing_detail.html", {
+                        "listing": Listing.objects.get(id=pk),
+                        "pk": pk,
+                        "max_bid": max_bid,
+                        "bid_count": bid_count,
+                        "user_logedin": "True",
+                        "is_creator": "True",
+                        "message_iw": "is_watched"
+                    })
+                # if listing exists and current user is the creator and IS NOT watched by him
+                elif is_watched(request, pk) == False:
+                    print("elif")
+                    return render(request, "auctions/listing_detail.html", {
+                        "listing": Listing.objects.get(id=pk),
+                        "pk": pk,
+                        "max_bid": max_bid,
+                        "bid_count": bid_count,
+                        "user_logedin": "True",
+                        "is_creator": "True",
+                        "message_inw": "is_not_watched"
+                    })
+
+            # to check if the current user has the hightest bid
+            # if listing exist and current user has the highest bid
+            if max_bid_user == request.user:
+                # if listing exist and current user has the highest bid and is watched by him
+                if is_watched(request, pk) == True:
+                    print("if_max")
+                    return render(request, "auctions/listing_detail.html", {
+                        "listing": Listing.objects.get(id=pk),
+                        "pk": pk,
+                        "max_bid": max_bid,
+                        "bid_count": bid_count,
+                        "max_bid_user": "is_max_bid_user",
+                        "user_logedin": "True",
+                        "message_iw": "is_watched"
+                    })
+                # if listing exist and current user has the highest bid and is NOT watched by him
+                elif is_watched(request, pk) == False:
+                    print("elif_max")
+                    return render(request, "auctions/listing_detail.html", {
+                        "listing": Listing.objects.get(id=pk),
+                        "pk": pk,
+                        "max_bid": max_bid,
+                        "bid_count": bid_count,
+                        "max_bid_user": "is_max_bid_user",
+                        "user_logedin": "True",
+                        "message_inw": "is_not_watched"
+                    })
+            # if listing exist and current user HAS NOT the highest bid and is watched by him
             else:
-                print("else")
+                if is_watched(request, pk) == True:
+                    print("if")
+                    return render(request, "auctions/listing_detail.html", {
+                        "listing": Listing.objects.get(id=pk),
+                        "pk": pk,
+                        "max_bid": max_bid,
+                        "bid_count": bid_count,
+                        "user_logedin": "True",
+                        "message_iw": "is_watched"
+                    })
+                # if listing exist and current user HAS NOT the highest bid and is NOT watched by him
+                elif is_watched(request, pk) == False:
+                    print("elif")
+                    return render(request, "auctions/listing_detail.html", {
+                        "listing": Listing.objects.get(id=pk),
+                        "pk": pk,
+                        "max_bid": max_bid,
+                        "bid_count": bid_count,
+                        "user_logedin": "True",
+                        "message_inw": "is_not_watched"
+                    })
+                # if listing exist and THERE IS NOT current user(is not logged in)
+                else:
+                    print("else")
+                    return render(request, "auctions/listing_detail.html", {
+                        "listing": Listing.objects.get(id=pk),
+                        "pk": pk,
+                        "max_bid": max_bid,
+                        "bid_count": bid_count,
+                    })
+        # if the listing exist but IS NOT active
+        else:
+            # if the listing exist, IS NOT active but the winner is seeing the listing
+            if max_bid_user == request.user:
+                print("if_max_closed")
                 return render(request, "auctions/listing_detail.html", {
                     "listing": Listing.objects.get(id=pk),
                     "pk": pk,
                     "max_bid": max_bid,
                     "bid_count": bid_count,
+                    "max_bid_user": "is_max_bid_user",
+                    "winner": "True",
+                    "active": "False"
                 })
+            print("else_if_inactive")
+            return render(request, "auctions/listing_detail.html", {
+                "listing": Listing.objects.get(id=pk),
+                "pk": pk,
+                "max_bid": max_bid,
+                "bid_count": bid_count,
+                "active": "False"
+            })
     # if listing in pk DOES NOT exist
     else:
         print("final")
@@ -319,6 +358,8 @@ def new_bid(request):
 
 
 @login_required
-def close_listing(request, pk):
-    
-    return
+def close_listing(request):
+    if request.method == "POST":
+        Listing.objects.filter(id=request.POST.get('listing_id')).update(is_active=False)
+        print("closed")
+        return HttpResponseRedirect(reverse("index"))

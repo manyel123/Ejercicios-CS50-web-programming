@@ -1,7 +1,13 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+    {% if active %}
     <h2>Active Listings</h2>
+    {% endif %}
+
+    {% if inactive %}
+    <h2>Closed Listings</h2>
+    {% endif %}
 
     {% if listings %}
     <ul>
