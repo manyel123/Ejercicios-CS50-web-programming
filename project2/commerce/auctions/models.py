@@ -20,23 +20,22 @@ class Category(models.Model):
 
 class Listing(models.Model):
     id              = models.AutoField(primary_key=True)
-    user_id         = models.ForeignKey(User, related_name='listings', on_delete=models.CASCADE, default=NULL)
+    user_id         = models.ForeignKey(User, related_name='listings', on_delete=models.CASCADE)
     title           = models.CharField(max_length=100, blank=False)
     description     = models.TextField(max_length=400)
     image_url       = models.URLField()
     creation_date   = models.DateTimeField(auto_now_add=True, blank=True)
     is_active       = models.BooleanField(default=True)
-    category_id     = models.ForeignKey(Category, related_name='category', on_delete=models.DO_NOTHING, default=NULL, db_constraint=False)
-    initial_bid     = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    category_id     = models.ForeignKey(Category, related_name='categorys', on_delete=models.DO_NOTHING)
+    initial_bid     = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     def __str__(self):
         return self.title
 
 
 class Watchlist(models.Model):
     id                = models.AutoField(primary_key=True)
-    user_id           = models.ForeignKey(User, related_name='watchlist', on_delete=models.CASCADE)
+    user_id           = models.ForeignKey(User, related_name='watchlists', on_delete=models.CASCADE)
     listing_id        = models.ForeignKey(Listing, related_name='watched_list', on_delete=models.CASCADE)
-    watched           = models.BooleanField(default=False)
 
 
 class Comments(models.Model):
@@ -49,6 +48,7 @@ class Comments(models.Model):
 
 class Bid(models.Model):
     id          = models.AutoField(primary_key=True)
-    listing_id  = models.ForeignKey(Listing, related_name='bid_listing', on_delete=models.CASCADE)
-    user_id     = models.ForeignKey(User, related_name='bid_user', on_delete=models.CASCADE)
+    listing_id  = models.ForeignKey(Listing, related_name='bid_listings', on_delete=models.CASCADE)
+    user_id     = models.ForeignKey(User, related_name='bid_users', on_delete=models.CASCADE)
+    amount      = models.DecimalField(max_digits=9, decimal_places=2, default=0)
     bid_date    = models.DateTimeField(auto_now_add=True, blank=True)

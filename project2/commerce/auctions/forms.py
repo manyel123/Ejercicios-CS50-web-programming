@@ -1,6 +1,6 @@
 from django import forms
 from .models import Listing
-from .models import Watchlist
+
 
 class ListingForm(forms.ModelForm):
     class Meta:

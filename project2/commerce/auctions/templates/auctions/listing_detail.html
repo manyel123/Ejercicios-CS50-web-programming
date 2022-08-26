@@ -7,12 +7,22 @@
 {% block body %}
 <h2>Listing: {{ listing.title }}</h2>
 <div>
-    <form action="{% url 'watchlist_add' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="listing_id" value="{{ listing.id }}">
-        <input class="btn btn-secondary btn-sm" type="submit" 
-        value="Watchlist">
-    </form>
+    {% if not message_iw %}
+        <form action="{% url 'watchlist_add' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+            <input class="btn btn-secondary btn-sm" type="submit" 
+            value="Watch!">
+        </form>
+    {% endif %}
+    {% if message_iw %}
+        <form action="{% url 'watchlist_del' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+            <input class="btn btn-warning btn-sm" type="submit" 
+            value="Discard!">
+        </form>
+    {% endif %}
 </div>
 <div>
     <img src="{{ listing.image_url }}" class="img-fluid rounded-start" alt="image">
@@ -22,10 +32,11 @@
     <p><small>bid|pluralize so far. Check for current bid!</small></p>
 </div>
 <div>
-    <form action="{% url 'login' %}" method="post">
+    <form action="{% url 'new_bid' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
-            <input autofocus class="form-control" type="text" name="bid" placeholder="Bid">
+            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+            <input autofocus class="form-control" type="number" name="bid_amount" placeholder="Bid">
         </div>
         <input class="btn btn-primary" type="submit" value="Place Bid">
     </form>

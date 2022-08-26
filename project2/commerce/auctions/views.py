@@ -8,15 +8,26 @@ from django.contrib.auth.decorators import login_required
 from .models import User
 from .models import Listing
 from .models import Watchlist
+from .models import Bid
 from .forms import ListingForm
 
 
 def get_all_listings():
-    return Listing.objects.all
+    return Listing.objects.all()
 
 
-def get_listing_by_id(id):
-    return Listing.objects.filter(id=id)
+def get_all_watchlists():
+    return Watchlist.objects.all()
+
+
+# returns object id
+def get_listing_id(request):
+    return request.POST["listing_id"]
+
+
+# returns the whole object
+def get_listing_obj(request):
+    return Listing.objects.get(id=request.POST.get('listing_id'))
 
 
 def get_active_listings():
@@ -105,34 +116,84 @@ def create_listing(request):
     
 def listing_detail(request, pk):
     if Listing.objects.filter(id=pk):
-        return render(request, "auctions/listing_detail.html", {
-            "listing": Listing.objects.get(id=pk),
-            "pk": pk
-        })
+        if is_watched(request, pk):
+            return render(request, "auctions/listing_detail.html", {
+                "listing": Listing.objects.get(id=pk),
+                "pk": pk,
+                "message_iw": "is_watched"
+            })
+        else:
+            return render(request, "auctions/listing_detail.html", {
+                "listing": Listing.objects.get(id=pk),
+                "pk": pk,
+                "message_inw": "is_not_watched"
+            })
     else:
         return render(request, "auctions/error.html", {
             "message": "The listing does not exist."
         })
+
+
+@login_required
+def is_watched(request, pk):
+    wl = get_all_watchlists()
+    obj_listing = Listing.objects.get(id=pk)
+    for w in wl:
+        if w.user_id == request.user and w.listing_id == obj_listing:
+            return True
         
+
 @login_required
 def add_to_watchlist(request):
+    id_listing = get_listing_id(request)
     if request.method == "POST":
         user_id = request.user
-        listing_id = request.POST["listing_id"]
-        watched = True
+        listing_id = id_listing
         try:
-            user = Watchlist.objects.create(user_id=user_id, listing_id=Listing(listing_id), watched=watched)
+            user = Watchlist.objects.create(user_id=user_id, listing_id=Listing(listing_id))
             user.save()
         except IntegrityError:
             return render(request, "auctions/error.html", {
-                "message": "Uknown error."
+                "message": "Error while adding to your watchlist."
             })
-        return HttpResponseRedirect(reverse("index"))
+        return listing_detail(request, listing_id)
     else:
         return render(request, "auctions/index.html")
-        #return Watchlist.objects.create(
-            #user_id=request.user, 
-            #listing_id = listing,
-            #listing_id=Listing.objects.filter(id=request.POST.get('listing_id'))[0],
-            #listing_id=Listing.objects.get(id=request.POST.get('listing_id')), 
-            #watched=True)
+
+
+@login_required
+def del_watchlist(request):
+    id_listing = get_listing_id(request)
+    obj_listing = get_listing_obj(request)
+    if request.method == "POST":
+        wl = get_all_watchlists()
+        for w in wl:
+            if w.user_id == request.user and w.listing_id == obj_listing:
+                query = Watchlist.objects.get(pk=w.id)
+                query.delete()
+        return listing_detail(request, id_listing)
+    else:
+        return render(request, "auctions/index.html")
+
+
+@login_required
+def new_bid(request):
+    user_id = request.user
+    id_listing = get_listing_id(request)
+    obj_listing = get_listing_obj(request)
+    bid_amount = request.POST['bid_amount']
+    if request.method == "POST":
+        print("bid amount")
+        print(request.POST['bid_amount'])
+        print("initial bid")
+        print(obj_listing.initial_bid)
+        try:
+            bid = Bid.objects.create(user_id=user_id,listing_id=Listing(id_listing), amount=bid_amount)
+            bid.save()
+        except IntegrityError:
+            return render(request, "auctions/error.html", {
+                "message": "Error while saving your bid."
+            })
+        return listing_detail(request, id_listing)
+    else:
+        return render(request, "auctions/index.html")
