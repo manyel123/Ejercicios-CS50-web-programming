@@ -7,7 +7,7 @@
 {% block body %}
 <h2>Listing: {{ listing.title }}</h2>
 <div>
-    {% if not message_iw %}
+    {% if not message_iw and user_logedin %}
         <form action="{% url 'watchlist_add' %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="listing_id" value="{{ listing.id }}">
@@ -15,7 +15,7 @@
             value="Watch!">
         </form>
     {% endif %}
-    {% if message_iw %}
+    {% if not message_inw and user_logedin %}
         <form action="{% url 'watchlist_del' %}" method="post">
             {% csrf_token %}
             <input type="hidden" name="listing_id" value="{{ listing.id }}">
@@ -30,9 +30,12 @@
     <p>{{ listing.description }}</p>
     <h5>Initial bid: ${{ listing.initial_bid }}</h5>
     <h4>Current bid: ${{ max_bid }}</h4>
-    <p><small>{{ bid_count }} bid{{ bid_count|pluralize }} so far.</small></p>
+    <p><small>{{ bid_count }} bid{{ bid_count|pluralize }} so far. 
+        {% if max_bid_user %} Your bid is the current bid. {% endif %}
+    </small></p>
 </div>
 <div>
+    {% if not is_creator or not user_logedin %}
     <form action="{% url 'new_bid' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
@@ -41,6 +44,16 @@
         </div>
         <input class="btn btn-primary" type="submit" value="Place Bid">
     </form>
+    {% endif %}
+    {% if is_creator and user_logedin %}
+    <form action="{% url 'close_listing' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+        </div>
+        <input class="btn btn-danger" type="submit" value="Close listing!">
+    </form>
+    {% endif %}
 </div>
 <br>
 <h3>Details</h3>

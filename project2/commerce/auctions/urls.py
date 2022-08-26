@@ -12,4 +12,5 @@ urlpatterns = [
     path("watchlist_add", views.add_to_watchlist, name="watchlist_add"),
     path("watchlist_del", views.del_watchlist, name="watchlist_del"),
     path("new_bid", views.new_bid, name="new_bid"),
+    path("close_listing", views.close_listing, name="close_listing")
 ]
