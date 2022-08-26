@@ -28,15 +28,16 @@
     <img src="{{ listing.image_url }}" class="img-fluid rounded-start" alt="image">
     <h5>Description:</h5>
     <p>{{ listing.description }}</p>
-    <h2>${{ listing.initial_bid }}</h2>
-    <p><small>bid|pluralize so far. Check for current bid!</small></p>
+    <h5>Initial bid: ${{ listing.initial_bid }}</h5>
+    <h4>Current bid: ${{ max_bid }}</h4>
+    <p><small>{{ bid_count }} bid{{ bid_count|pluralize }} so far.</small></p>
 </div>
 <div>
     <form action="{% url 'new_bid' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
             <input type="hidden" name="listing_id" value="{{ listing.id }}">
-            <input autofocus class="form-control" type="number" name="bid_amount" placeholder="Bid">
+            <input autofocus class="form-control" type="text" name="bid_amount" placeholder="Bid">
         </div>
         <input class="btn btn-primary" type="submit" value="Place Bid">
     </form>

@@ -115,17 +115,23 @@ def create_listing(request):
 
     
 def listing_detail(request, pk):
+    max_bid = get_max_bid(pk)
+    bid_count = count_bids(pk)
     if Listing.objects.filter(id=pk):
         if is_watched(request, pk):
             return render(request, "auctions/listing_detail.html", {
                 "listing": Listing.objects.get(id=pk),
                 "pk": pk,
+                "max_bid": max_bid,
+                "bid_count": bid_count,
                 "message_iw": "is_watched"
             })
         else:
             return render(request, "auctions/listing_detail.html", {
                 "listing": Listing.objects.get(id=pk),
                 "pk": pk,
+                "max_bid": max_bid,
+                "bid_count": bid_count,
                 "message_inw": "is_not_watched"
             })
     else:
@@ -141,7 +147,24 @@ def is_watched(request, pk):
     for w in wl:
         if w.user_id == request.user and w.listing_id == obj_listing:
             return True
-        
+
+
+def get_max_bid(pk):
+    obj_listing = Listing.objects.get(id=pk)
+    bids = obj_listing.bid_listings.all()
+    max_bid = 0
+    for b in bids:
+        if b.amount > max_bid:
+            max_bid = b.amount
+    return max_bid
+
+
+def count_bids(pk):
+    obj_listing = Listing.objects.get(id=pk)
+    bids = obj_listing.bid_listings.all()
+    bid_count = int(len(bids))
+    return bid_count
+
 
 @login_required
 def add_to_watchlist(request):
@@ -182,13 +205,19 @@ def new_bid(request):
     id_listing = get_listing_id(request)
     obj_listing = get_listing_obj(request)
     bid_amount = request.POST['bid_amount']
+    bids = obj_listing.bid_listings.all()
+    max_bid = 0
+    init_bid = obj_listing.initial_bid
     if request.method == "POST":
-        print("bid amount")
-        print(request.POST['bid_amount'])
-        print("initial bid")
-        print(obj_listing.initial_bid)
+        for b in bids:
+            if b.amount > max_bid:
+                max_bid = b.amount
+        if float(bid_amount) < max_bid or float(bid_amount) < init_bid:
+            return render(request, "auctions/error.html", {
+                "message": "Error. Your bid must be major to current bid."
+            })
         try:
-            bid = Bid.objects.create(user_id=user_id,listing_id=Listing(id_listing), amount=bid_amount)
+            bid = Bid.objects.create(user_id=user_id,listing_id=obj_listing, amount=bid_amount)
             bid.save()
         except IntegrityError:
             return render(request, "auctions/error.html", {
