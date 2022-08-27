@@ -91,7 +91,7 @@
     {% csrf_token %}
     <div class="form-group">
         <input type="hidden" name="listing_id" value="{{ listing.id }}">
-        <textarea autofocus class="form-control" type="text" name="comment" placeholder="Comment"></textarea> 
+        <textarea class="form-control" type="text" name="comment" placeholder="Comment"></textarea> 
     </div>
     <input class="btn btn-warning btn-sm" type="submit" value="Post comment">
 </form>
