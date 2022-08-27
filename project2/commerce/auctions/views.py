@@ -11,6 +11,8 @@ from .models import Listing
 from .models import Watchlist
 from .models import Bid
 from. models import Comments
+from. models import Category
+
 from .forms import ListingForm
 
 
@@ -146,10 +148,8 @@ def listing_detail(request, pk):
             # to check if current user is the listing creator to be able to close the listing
             # if listing exist and current user is the creator of the listing
             if request.user == current_listing.user_id:
-                print("creator")
                 # if listing exists and current user is the creator and is watched by him
                 if is_watched(request, pk) == True:
-                    print("if")
                     return render(request, "auctions/listing_detail.html", {
                         "listing": Listing.objects.get(id=pk),
                         "pk": pk,
@@ -162,7 +162,6 @@ def listing_detail(request, pk):
                     })
                 # if listing exists and current user is the creator and IS NOT watched by him
                 elif is_watched(request, pk) == False:
-                    print("elif")
                     return render(request, "auctions/listing_detail.html", {
                         "listing": Listing.objects.get(id=pk),
                         "pk": pk,
@@ -178,7 +177,6 @@ def listing_detail(request, pk):
             if max_bid_user == request.user:
                 # if listing exist and current user has the highest bid and is watched by him
                 if is_watched(request, pk) == True:
-                    print("if_max")
                     return render(request, "auctions/listing_detail.html", {
                         "listing": Listing.objects.get(id=pk),
                         "pk": pk,
@@ -191,7 +189,6 @@ def listing_detail(request, pk):
                     })
                 # if listing exist and current user has the highest bid and is NOT watched by him
                 elif is_watched(request, pk) == False:
-                    print("elif_max")
                     return render(request, "auctions/listing_detail.html", {
                         "listing": Listing.objects.get(id=pk),
                         "pk": pk,
@@ -205,7 +202,6 @@ def listing_detail(request, pk):
             # if listing exist and current user HAS NOT the highest bid and is watched by him
             else:
                 if is_watched(request, pk) == True:
-                    print("if")
                     return render(request, "auctions/listing_detail.html", {
                         "listing": Listing.objects.get(id=pk),
                         "pk": pk,
@@ -217,7 +213,6 @@ def listing_detail(request, pk):
                     })
                 # if listing exist and current user HAS NOT the highest bid and is NOT watched by him
                 elif is_watched(request, pk) == False:
-                    print("elif")
                     return render(request, "auctions/listing_detail.html", {
                         "listing": Listing.objects.get(id=pk),
                         "pk": pk,
@@ -229,7 +224,6 @@ def listing_detail(request, pk):
                     })
                 # if listing exist and THERE IS NOT current user(is not logged in)
                 else:
-                    print("else")
                     return render(request, "auctions/listing_detail.html", {
                         "listing": Listing.objects.get(id=pk),
                         "pk": pk,
@@ -241,7 +235,6 @@ def listing_detail(request, pk):
         else:
             # if the listing exist, IS NOT active but the winner is seeing the listing
             if max_bid_user == request.user:
-                print("if_max_closed")
                 return render(request, "auctions/listing_detail.html", {
                     "listing": Listing.objects.get(id=pk),
                     "pk": pk,
@@ -252,7 +245,6 @@ def listing_detail(request, pk):
                     "active": "False",
                     "comments": listing_comments
                 })
-            print("else_if_inactive")
             return render(request, "auctions/listing_detail.html", {
                 "listing": Listing.objects.get(id=pk),
                 "pk": pk,
@@ -263,7 +255,6 @@ def listing_detail(request, pk):
             })
     # if listing in pk DOES NOT exist
     else:
-        print("final")
         return render(request, "auctions/error.html", {
             "message": "The listing does not exist."
         })
@@ -364,7 +355,6 @@ def new_bid(request):
 def close_listing(request):
     if request.method == "POST":
         Listing.objects.filter(id=request.POST.get('listing_id')).update(is_active=False)
-        print("closed")
         return HttpResponseRedirect(reverse("index"))
 
 
@@ -385,3 +375,50 @@ def new_comment(request):
         return listing_detail(request, id_listing)
     else:
         return render(request, "auctions/index.html")
+
+
+@login_required
+def get_user_watchlist(request):
+    wl = get_all_watchlists()
+    user_wl = wl.objects.filter(user_id=request.user)
+    return user_wl
+
+
+@login_required
+def display_watchlist(request):
+    all_listings = get_all_listings()
+    wl = get_all_watchlists()
+    filtered_listings = []
+
+    for listing in all_listings:
+        for w in wl:
+            if w.user_id == request.user and w.listing_id == listing:
+                filtered_listings.append(listing)
+
+    return render(request, "auctions/watchlist.html", {
+        'listings': filtered_listings,
+        'count': len(filtered_listings)
+    })
+
+
+def display_categories(request):
+    categories = Category.objects.all()
+    return render(request, "auctions/categories.html", {
+        'categories': categories
+    })
+
+
+def display_category(request,pk):
+    all_listings = get_all_listings()
+    category = Category.objects.get(id=pk)
+    filtered_listings = []
+
+    for listing in all_listings:
+        if listing.category_id == category:
+            filtered_listings.append(listing)
+
+    return render(request, "auctions/category.html", {
+        'category': category,
+        'pk': pk,
+        "listings": filtered_listings
+    })
