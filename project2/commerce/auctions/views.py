@@ -10,6 +10,7 @@ from .models import User
 from .models import Listing
 from .models import Watchlist
 from .models import Bid
+from. models import Comments
 from .forms import ListingForm
 
 
@@ -130,14 +131,8 @@ def create_listing(request):
     
 def listing_detail(request, pk):
     
-    #if request.user == get_listing_obj(pk):
-        #print(request.user)
-    # if the visitor is the user with the max bid
-    #if request.user.is_authenticated:
-
-    # if listing exist
     if Listing.objects.filter(id=pk):  
-
+        listing_comments = Comments.objects.filter(listing_id=pk)
         max_bid_info = get_max_bid(pk)
         max_bid = max_bid_info[0]
         max_bid_user = max_bid_info[1]
@@ -162,7 +157,8 @@ def listing_detail(request, pk):
                         "bid_count": bid_count,
                         "user_logedin": "True",
                         "is_creator": "True",
-                        "message_iw": "is_watched"
+                        "message_iw": "is_watched",
+                        "comments": listing_comments
                     })
                 # if listing exists and current user is the creator and IS NOT watched by him
                 elif is_watched(request, pk) == False:
@@ -174,9 +170,9 @@ def listing_detail(request, pk):
                         "bid_count": bid_count,
                         "user_logedin": "True",
                         "is_creator": "True",
-                        "message_inw": "is_not_watched"
+                        "message_inw": "is_not_watched",
+                        "comments": listing_comments
                     })
-
             # to check if the current user has the hightest bid
             # if listing exist and current user has the highest bid
             if max_bid_user == request.user:
@@ -190,7 +186,8 @@ def listing_detail(request, pk):
                         "bid_count": bid_count,
                         "max_bid_user": "is_max_bid_user",
                         "user_logedin": "True",
-                        "message_iw": "is_watched"
+                        "message_iw": "is_watched",
+                        "comments": listing_comments
                     })
                 # if listing exist and current user has the highest bid and is NOT watched by him
                 elif is_watched(request, pk) == False:
@@ -202,7 +199,8 @@ def listing_detail(request, pk):
                         "bid_count": bid_count,
                         "max_bid_user": "is_max_bid_user",
                         "user_logedin": "True",
-                        "message_inw": "is_not_watched"
+                        "message_inw": "is_not_watched",
+                        "comments": listing_comments
                     })
             # if listing exist and current user HAS NOT the highest bid and is watched by him
             else:
@@ -214,7 +212,8 @@ def listing_detail(request, pk):
                         "max_bid": max_bid,
                         "bid_count": bid_count,
                         "user_logedin": "True",
-                        "message_iw": "is_watched"
+                        "message_iw": "is_watched",
+                        "comments": listing_comments
                     })
                 # if listing exist and current user HAS NOT the highest bid and is NOT watched by him
                 elif is_watched(request, pk) == False:
@@ -225,7 +224,8 @@ def listing_detail(request, pk):
                         "max_bid": max_bid,
                         "bid_count": bid_count,
                         "user_logedin": "True",
-                        "message_inw": "is_not_watched"
+                        "message_inw": "is_not_watched",
+                        "comments": listing_comments
                     })
                 # if listing exist and THERE IS NOT current user(is not logged in)
                 else:
@@ -235,6 +235,7 @@ def listing_detail(request, pk):
                         "pk": pk,
                         "max_bid": max_bid,
                         "bid_count": bid_count,
+                        "comments": listing_comments
                     })
         # if the listing exist but IS NOT active
         else:
@@ -248,7 +249,8 @@ def listing_detail(request, pk):
                     "bid_count": bid_count,
                     "max_bid_user": "is_max_bid_user",
                     "winner": "True",
-                    "active": "False"
+                    "active": "False",
+                    "comments": listing_comments
                 })
             print("else_if_inactive")
             return render(request, "auctions/listing_detail.html", {
@@ -256,7 +258,8 @@ def listing_detail(request, pk):
                 "pk": pk,
                 "max_bid": max_bid,
                 "bid_count": bid_count,
-                "active": "False"
+                "active": "False",
+                "comments": listing_comments
             })
     # if listing in pk DOES NOT exist
     else:
@@ -297,8 +300,8 @@ def count_bids(pk):
 
 @login_required
 def add_to_watchlist(request):
-    id_listing = get_listing_id(request)
     if request.method == "POST":
+        id_listing = get_listing_id(request)
         user_id = request.user
         listing_id = id_listing
         try:
@@ -315,9 +318,9 @@ def add_to_watchlist(request):
 
 @login_required
 def del_watchlist(request):
-    id_listing = get_listing_id(request)
-    obj_listing = get_listing_obj(request)
     if request.method == "POST":
+        id_listing = get_listing_id(request)
+        obj_listing = get_listing_obj(request)
         wl = get_all_watchlists()
         for w in wl:
             if w.user_id == request.user and w.listing_id == obj_listing:
@@ -330,14 +333,14 @@ def del_watchlist(request):
 
 @login_required
 def new_bid(request):
-    user_id = request.user
-    id_listing = get_listing_id(request)
-    obj_listing = get_listing_obj(request)
-    bid_amount = request.POST['bid_amount']
-    bids = obj_listing.bid_listings.all()
-    max_bid = 0
-    init_bid = obj_listing.initial_bid
     if request.method == "POST":
+        user_id = request.user
+        id_listing = get_listing_id(request)
+        obj_listing = get_listing_obj(request)
+        bid_amount = request.POST['bid_amount']
+        bids = obj_listing.bid_listings.all()
+        max_bid = 0
+        init_bid = obj_listing.initial_bid
         for b in bids:
             if b.amount > max_bid:
                 max_bid = b.amount
@@ -363,3 +366,22 @@ def close_listing(request):
         Listing.objects.filter(id=request.POST.get('listing_id')).update(is_active=False)
         print("closed")
         return HttpResponseRedirect(reverse("index"))
+
+
+@login_required
+def new_comment(request):
+    if request.method == "POST":
+        user_id = request.user
+        id_listing = get_listing_id(request)
+        obj_listing = get_listing_obj(request)
+        comment = request.POST['comment']
+        try:
+            comment = Comments.objects.create(user_id=user_id.id, listing_id=obj_listing.id, comment=comment)
+            comment.save()
+        except IntegrityError:
+            return render(request, "auctions/error.html", {
+                "message": "Error while saving your comment."
+            })
+        return listing_detail(request, id_listing)
+    else:
+        return render(request, "auctions/index.html")
