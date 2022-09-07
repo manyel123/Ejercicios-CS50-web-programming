@@ -19,7 +19,7 @@ def flight(request, flight_id):
         "flight": flight,
         # passengers who will go into the flight
         "passengers": flight.passengers.all(),
-        # passengers that are not in the current flight
+        # passengers that are not in the current flight(used for book to add new passengers into a flight)
         "non_passengers": Passenger.objects.exclude(flights=flight).all()
     })
 
@@ -28,7 +28,7 @@ def book(request, flight_id):
     if request.method == "POST":
         # gets the current flight
         flight = Flight.objects.get(pk=flight_id)
-        # gets the passenger to be included into the flight from the select form
+        # gets the passenger to be included into the flight from template's form
         passenger = Passenger.objects.get(pk=int(request.POST["passenger"]))
         # adds or register the passenger into the flight
         passenger.flights.add(flight)
