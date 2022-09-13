@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Colors</title>
+        <script>
+
+            document.addEventListener('DOMContentLoaded', () => {
+
+                document.querySelectorAll('button').forEach(button => {
+                    button.onclick = () => {
+                        document.querySelector('#hello').style.color = button.dataset.color;
+                    }
+                })
+                
+            })
+
+            /*
+            document.addEventListener('DOMContentLoaded', function() {
+
+                // look for all buttons             for each button that came back run a function for each one
+                document.querySelectorAll('button').forEach(function(button) {
+                    // adds an onclick handler to the button 
+                    button.onclick = function() {
+                        // when the button is clicked on its color is changed using
+                        // the data-"color" property 
+                        document.querySelector('#hello').style.color = button.dataset.color;
+                    }
+                })
+                
+                
+                // Change font color to red
+                document.querySelector('#red').onclick = function() {
+                    document.querySelector('#hello').style.color = 'red';
+                }
+                // Change font color to blue
+                document.querySelector('#blue').onclick = function() {
+                    document.querySelector('#hello').style.color = 'blue';
+                }
+                // Change font color to green
+                document.querySelector('#green').onclick = function() {
+                    document.querySelector('#hello').style.color = 'green';
+                }
+            })*/
+
+        </script>
+    </head>
+    <body>
+        <h1 id="hello">Hello!</h1>
+        <button data-color="red">Red</button>
+        <button data-color="blue">Blue</button>
+        <button data-color="green">Green</button>
+    </body>
+</html>
