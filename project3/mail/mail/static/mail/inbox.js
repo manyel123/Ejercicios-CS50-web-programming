@@ -17,9 +17,31 @@ function compose_email() {
   document.querySelector('#compose-view').style.display = 'block';
 
   // Clear out composition fields
-  document.querySelector('#compose-recipients').value = '';
-  document.querySelector('#compose-subject').value = '';
-  document.querySelector('#compose-body').value = '';
+  document.querySelector('#compose-recipients').value = 'recipients';
+  document.querySelector('#compose-subject').value = 'subject';
+  document.querySelector('#compose-body').value = 'body';
+
+  //
+  button.onclick = send_email()
+}
+
+//
+function send_email() {
+
+  // Store the email sent into the db
+  fetch('/emails', {
+    method: 'POST',
+    body: JSON.stringify({
+        recipients: 'baz@example.com',
+        subject: 'Meeting time',
+        body: 'How about we meet tomorrow at 3pm?'
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
+      // Print result
+      console.log(result);
+  });
 }
 
 function load_mailbox(mailbox) {
@@ -31,3 +53,5 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 }
+
+
