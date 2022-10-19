@@ -21,11 +21,11 @@ function compose_email() {
   document.querySelector('#compose-subject').value = 'subject';
   document.querySelector('#compose-body').value = 'body';
 
-  //
+  // pending
   button.onclick = send_email()
 }
 
-//
+// pending
 function send_email() {
 
   // Store the email sent into the db
