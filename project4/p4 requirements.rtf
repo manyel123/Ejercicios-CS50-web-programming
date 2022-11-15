@@ -1,0 +1,55 @@
+{\rtf1\ansi\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang10 Network\par
+CS50W does not feature a one-to-one correspondence between lectures and projects. If you are attempting this project without having at least watched Lecture 7, you\rquote re trying this too soon!\par
+\par
+Design a Twitter-like social network website for making posts and following users.\par
+\par
+Network page\par
+\par
+Getting Started\par
+Download the distribution code from {{\field{\*\fldinst{HYPERLINK https://cdn.cs50.net/web/2020/spring/projects/4/network.zip }}{\fldrslt{https://cdn.cs50.net/web/2020/spring/projects/4/network.zip\ul0\cf0}}}}\f0\fs22  and unzip it.\par
+In your terminal, cd into the project4 directory.\par
+Run python manage.py makemigrations network to make migrations for the network app.\par
+Run python manage.py migrate to apply migrations to your database.\par
+Understanding\par
+In the distribution code is a Django project called project4 that contains a single app called network, structured similarly to Project 2\rquote s auctions app.\par
+\par
+First, open up network/urls.py, where the URL configuration for this app is defined. Notice that we\rquote ve already written a few URLs for you, including a default index route, a /login route, a /logout route, and a /register route.\par
+\par
+Take a look at network/views.py to see the views that are associated with each of these routes. The index view for now returns a mostly-empty index.html template. The login_view view renders a login form when a user tries to GET the page. When a user submits the form using the POST request method, the user is authenticated, logged in, and redirected to the index page. The logout_view view logs the user out and redirects them to the index page. Finally, the register route displays a registration form to the user, and creates a new user when the form is submitted. All of this is done for you in the distribution code, so you should be able to run the application now to create some users.\par
+\par
+Run python manage.py runserver to start up the Django web server, and visit the website in your browser. Click \ldblquote Register\rdblquote  and register for an account. You should see that you are now \ldblquote Signed in as\rdblquote  your user account, and the links at the top of the page have changed. How did the HTML change? Take a look at network/templates/network/layout.html for the HTML layout of this application. Notice that several parts of the template are wrapped in a check for if user.is_authenticated, so that different content can be rendered depending on whether the user is signed in or not. You\rquote re welcome to change this file if you\rquote d like to add or modify anything in the layout!\par
+\par
+Finally, take a look at network/models.py. This is where you will define any models for your web application, where each model represents some type of data you want to store in your database. We\rquote ve started you with a User model that represents each user of the application. Because it inherits from AbstractUser, it will already have fields for a username, email, password, etc., but you\rquote re welcome to add new fields to the User class if there is additional information about a user that you wish to represent. You will also need to add additional models to this file to represent details about posts, likes, and followers. Remember that each time you change anything in network/models.py, you\rquote ll need to first run python manage.py makemigrations and then python manage.py migrate to migrate those changes to your database.\par
+\par
+Specification\par
+Using Python, JavaScript, HTML, and CSS, complete the implementation of a social network that allows users to make posts, follow other users, and \ldblquote like\rdblquote  posts. You must fulfill the following requirements:\par
+\par
+New Post: Users who are signed in should be able to write a new text-based post by filling in text into a text area and then clicking a button to submit the post.\par
+The screenshot at the top of this specification shows the \ldblquote New Post\rdblquote  box at the top of the \ldblquote All Posts\rdblquote  page. You may choose to do this as well, or you may make the \ldblquote New Post\rdblquote  feature a separate page.\par
+All Posts: The \ldblquote All Posts\rdblquote  link in the navigation bar should take the user to a page where they can see all posts from all users, with the most recent posts first.\par
+Each post should include the username of the poster, the post content itself, the date and time at which the post was made, and the number of \ldblquote likes\rdblquote  the post has (this will be 0 for all posts until you implement the ability to \ldblquote like\rdblquote  a post later).\par
+Profile Page: Clicking on a username should load that user\rquote s profile page. This page should:\par
+Display the number of followers the user has, as well as the number of people that the user follows.\par
+Display all of the posts for that user, in reverse chronological order.\par
+For any other user who is signed in, this page should also display a \ldblquote Follow\rdblquote  or \ldblquote Unfollow\rdblquote  button that will let the current user toggle whether or not they are following this user\rquote s posts. Note that this only applies to any \ldblquote other\rdblquote  user: a user should not be able to follow themselves.\par
+Following: The \ldblquote Following\rdblquote  link in the navigation bar should take the user to a page where they see all posts made by users that the current user follows.\par
+This page should behave just as the \ldblquote All Posts\rdblquote  page does, just with a more limited set of posts.\par
+This page should only be available to users who are signed in.\par
+Pagination: On any page that displays posts, posts should only be displayed 10 on a page. If there are more than ten posts, a \ldblquote Next\rdblquote  button should appear to take the user to the next page of posts (which should be older than the current page of posts). If not on the first page, a \ldblquote Previous\rdblquote  button should appear to take the user to the previous page of posts as well.\par
+See the Hints section for some suggestions on how to implement this.\par
+Edit Post: Users should be able to click an \ldblquote Edit\rdblquote  button or link on any of their own posts to edit that post.\par
+When a user clicks \ldblquote Edit\rdblquote  for one of their own posts, the content of their post should be replaced with a textarea where the user can edit the content of their post.\par
+The user should then be able to \ldblquote Save\rdblquote  the edited post. Using JavaScript, you should be able to achieve this without requiring a reload of the entire page.\par
+For security, ensure that your application is designed such that it is not possible for a user, via any route, to edit another user\rquote s posts.\par
+\ldblquote Like\rdblquote  and \ldblquote Unlike\rdblquote : Users should be able to click a button or link on any post to toggle whether or not they \ldblquote like\rdblquote  that post.\par
+Using JavaScript, you should asynchronously let the server know to update the like count (as via a call to fetch) and then update the post\rquote s like count displayed on the page, without requiring a reload of the entire page.\par
+Hints\par
+For examples of JavaScript fetch calls, you may find some of the routes in Project 3 useful to reference.\par
+You\rquote ll likely need to create one or more models in network/models.py and/or modify the existing User model to store the necessary data for your web application.\par
+Django\rquote s Paginator class may be helpful for implementing pagination on the back-end (in your Python code).\par
+Bootstrap\rquote s Pagination features may be helpful for displaying pages on the front-end (in your HTML).\par
+}
+ 
