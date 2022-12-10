@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
 
+  // Submit the form to send a new email
   document.querySelector('#compose-form').onsubmit = send_email;
 
   // By default, load the inbox
@@ -28,19 +29,29 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
+
 function send_email() {
+  // Defines email content
   const recipients = document.querySelector('#compose-recipients').value;
   const subject = document.querySelector('#compose-subject').value;
   const body = document.querySelector('#compose-body').value;
-  console.log(recipients);
+
+  // console.log(recipients);
+
+  // API to make the request into url /emails wich will actually save the new email into the db
   fetch('/emails', {
+
+    // /emails url needs a post request
     method: 'POST',
+
+    // Turn the JS object literal into a JSON string
     body: JSON.stringify({
       recipients: recipients,
       subject: subject,
       body: body
     })
   })
+    // Turns response into a JSON
     .then(response => response.json())
       .then(result => {
         if ("message" in result) {
@@ -49,17 +60,19 @@ function send_email() {
         }
 
         if ("error" in result) {
-            // There was an error in sending the email
+            // If there was an error in sending the email
             // Display the error next to the "To:"
             document.querySelector('#to-text-error-message').innerHTML = result['error']
 
         }
-        console.log(result);
-        console.log("message" in result);
-        console.log("error" in result);
+        // console.log(result);
+        // console.log("message" in result);
+        // console.log("error" in result);
       })
+      
+        // Catch the error 
         .catch(error => {
-            // we hope this code is never executed, but who knows?
+            // Print the error
             console.log(error);
         });
   return false;
