@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
 
+  document.querySelector('#compose-form').onsubmit = send_email;
+
   // By default, load the inbox
   load_mailbox('inbox');
 });
@@ -15,33 +17,52 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  
+  document.querySelector('#single-email-view').style.display = 'none';
+  document.querySelectorAll("button").forEach(button => button.classList.remove("selected"));
+  document.querySelector(`#compose`).classList.add("selected");
 
   // Clear out composition fields
-  document.querySelector('#compose-recipients').value = 'recipients';
-  document.querySelector('#compose-subject').value = 'subject';
-  document.querySelector('#compose-body').value = 'body';
-
-  // pending
-  button.onclick = send_email()
+  document.querySelector('#compose-recipients').value = '';
+  document.querySelector('#compose-subject').value = '';
+  document.querySelector('#compose-body').value = '';
 }
 
-// pending
 function send_email() {
-
-  // Store the email sent into the db
+  const recipients = document.querySelector('#compose-recipients').value;
+  const subject = document.querySelector('#compose-subject').value;
+  const body = document.querySelector('#compose-body').value;
+  console.log(recipients);
   fetch('/emails', {
     method: 'POST',
     body: JSON.stringify({
-        recipients: 'baz@example.com',
-        subject: 'Meeting time',
-        body: 'How about we meet tomorrow at 3pm?'
+      recipients: recipients,
+      subject: subject,
+      body: body
     })
   })
-  .then(response => response.json())
-  .then(result => {
-      // Print result
-      console.log(result);
-  });
+    .then(response => response.json())
+      .then(result => {
+        if ("message" in result) {
+            // The email was sent successfully!
+            load_mailbox('sent');
+        }
+
+        if ("error" in result) {
+            // There was an error in sending the email
+            // Display the error next to the "To:"
+            document.querySelector('#to-text-error-message').innerHTML = result['error']
+
+        }
+        console.log(result);
+        console.log("message" in result);
+        console.log("error" in result);
+      })
+        .catch(error => {
+            // we hope this code is never executed, but who knows?
+            console.log(error);
+        });
+  return false;
 }
 
 function load_mailbox(mailbox) {
