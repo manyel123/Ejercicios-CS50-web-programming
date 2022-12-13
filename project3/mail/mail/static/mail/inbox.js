@@ -119,7 +119,7 @@ function load_mailbox(mailbox) {
         // condition ? exprIfTrue : exprIfFalse
         row_div_element.classList.add("row", "email-line-box", email["read"] ? "read" : "unread");
         
-        // Adding first row to display with titles
+        // Adding first row to display titles
         if (email === email_content_to_display) { row_div_element.id = 'titled-first-row'; }
 
         // Display every email preview as a new section
