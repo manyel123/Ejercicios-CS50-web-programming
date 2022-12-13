@@ -106,27 +106,48 @@ function load_mailbox(mailbox) {
         'sender': 'Sender', 'subject': 'Subject', 'timestamp': 'Date and time', 'read': true
       };
       
+      // Appending all emails to display to variable emails
       emails = [email_content_to_display, ...emails];
       
+      // Displaying every email
       emails.forEach(email => {
+
+        // Creating a div element for every email
         const row_div_element = document.createElement('div');
+
+        // Creating a row for the read/unread property
+        // condition ? exprIfTrue : exprIfFalse
         row_div_element.classList.add("row", "email-line-box", email["read"] ? "read" : "unread");
         
+        // Adding first row to display with titles
         if (email === email_content_to_display) { row_div_element.id = 'titled-first-row'; }
+
+        // Display every email preview as a new section
         sections_to_display.forEach(
+          
+          // Displaying a single section
           section => {
+
+            // Taking section properties
             const section_name = section[0];
             const section_size = section[1];
+
+            // Opening a div element for the new section
             const div_section = document.createElement('div');
+            // Setting section properties
             div_section.classList.add(`col-${section_size}`, `${section_name}-section`);
+            // Closing div element
             div_section.innerHTML = `<p>${email[section_name]}</p>`;
+            
+            // Adding the new section as a a new row
             row_div_element.append(div_section);
 
           });/*
         if (email !== artificial_first_email) {
           row_div_element.addEventListener('click', () => load_email(email["id"], mailbox));
         }*/
-
+        
+        // Adds every email to display as a div element
         document.querySelector('#emails-view').append(row_div_element);
       })
 
