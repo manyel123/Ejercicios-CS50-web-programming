@@ -78,6 +78,8 @@ function send_email() {
       // Print the error
       console.log(error);
     });
+  
+  // If not return statement there will be a JSONDecodeError
   return false;
 }
 
@@ -142,7 +144,7 @@ function load_mailbox(mailbox) {
             // Adding the new section as a a new row
             row_div_element.append(div_section);
 
-          });/*
+          });/* WAITING TO CODE load_email FUNCTION
         if (email !== artificial_first_email) {
           row_div_element.addEventListener('click', () => load_email(email["id"], mailbox));
         }*/
@@ -159,4 +161,20 @@ function load_mailbox(mailbox) {
     });
 }
 
+function archive_email(email_id, archive) {
+  // API to make the request into url /emails/<int:email_id> which get the particular email we need to update
+  fetch(`/emails/${email_id}`, {
 
+      // Method for updating a value
+      method: 'PUT',
+
+      // Turn the JS object literal into a JSON string
+      body: JSON.stringify({
+
+          // Updating the value "archived" will archive or unarchive an email
+          archived: archive 
+      })
+  
+  // After updating it will load inbox page
+  }).then( () => load_mailbox("inbox"));
+}
