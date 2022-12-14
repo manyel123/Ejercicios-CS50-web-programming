@@ -122,7 +122,7 @@ function load_mailbox(mailbox) {
         row_div_element.classList.add("row", "email-line-box", email["read"] ? "read" : "unread");
         
         // Adding first row to display titles
-        if (email === email_content_to_display) { row_div_element.id = 'titled-first-row'; }
+        if (email === email_content_to_display) { row_div_element.id = 'first-row-titles'; }
 
         // Display every email preview as a new section
         sections_to_display.forEach(
@@ -145,7 +145,7 @@ function load_mailbox(mailbox) {
             row_div_element.append(div_section);
 
           });/* WAITING TO CODE load_email FUNCTION
-        if (email !== artificial_first_email) {
+        if (email !== email_content_to_display) {
           row_div_element.addEventListener('click', () => load_email(email["id"], mailbox));
         }*/
         
