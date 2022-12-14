@@ -78,7 +78,7 @@ function send_email() {
       // Print the error
       console.log(error);
     });
-  
+
   // If not return statement there will be a JSONDecodeError
   return false;
 }
@@ -107,10 +107,10 @@ function load_mailbox(mailbox) {
       const email_content_to_display = {
         'sender': 'Sender', 'subject': 'Subject', 'timestamp': 'Date and time', 'read': true
       };
-      
+
       // Appending all emails to display to variable emails
       emails = [email_content_to_display, ...emails];
-      
+
       // Displaying every email
       emails.forEach(email => {
 
@@ -120,13 +120,13 @@ function load_mailbox(mailbox) {
         // Creating a row for the read/unread property
         // condition ? exprIfTrue : exprIfFalse
         row_div_element.classList.add("row", "email-line-box", email["read"] ? "read" : "unread");
-        
+
         // Adding first row to display titles
         if (email === email_content_to_display) { row_div_element.id = 'first-row-titles'; }
 
         // Display every email preview as a new section
         sections_to_display.forEach(
-          
+
           // Displaying a single section
           section => {
 
@@ -140,7 +140,7 @@ function load_mailbox(mailbox) {
             div_section.classList.add(`col-${section_size}`, `${section_name}-section`);
             // Closing div element
             div_section.innerHTML = `<p>${email[section_name]}</p>`;
-            
+
             // Adding the new section as a a new row
             row_div_element.append(div_section);
 
@@ -148,7 +148,7 @@ function load_mailbox(mailbox) {
         if (email !== email_content_to_display) {
           row_div_element.addEventListener('click', () => load_email(email["id"], mailbox));
         }*/
-        
+
         // Adds every email to display as a div element
         document.querySelector('#emails-view').append(row_div_element);
       })
@@ -161,20 +161,42 @@ function load_mailbox(mailbox) {
     });
 }
 
+// PENDING FOR TEST
 function archive_email(email_id, archive) {
   // API to make the request into url /emails/<int:email_id> which get the particular email we need to update
   fetch(`/emails/${email_id}`, {
 
-      // Method for updating a value
-      method: 'PUT',
+    // Method for updating a value
+    method: 'PUT',
 
-      // Turn the JS object literal into a JSON string
-      body: JSON.stringify({
+    // Turn the JS object literal into a JSON string
+    body: JSON.stringify({
 
-          // Updating the value "archived" will archive or unarchive an email
-          archived: archive 
-      })
-  
-  // After updating it will load inbox page
-  }).then( () => load_mailbox("inbox"));
+      // Updating the value "archived" will archive or unarchive an email
+      archived: archive
+    })
+
+    // After updating it will load inbox page
+  }).then(() => load_mailbox("inbox"));
 }
+
+// PENDING FOR TEST
+function reply_email(email) {
+
+  // Compose a new email using the existin function compose_email()
+  compose_email();
+
+  // Set the recipient with the existing value on sender for the current email being watched
+  document.querySelector('#compose-recipients').value = email["sender"];
+
+  // Set the email subject adding Re: at the beggining
+  document.querySelector('#compose-subject').value = email[
+    "subject"].slice(0, 4) === "Re: " ? email["subject"] : "Re: " + email["subject"];
+
+  // Set the reply's body with the date and the sender separated with by a few line breaks
+  const reply_body_content = `\n \n \n------ On ${email['timestamp']} ${email["sender"]} wrote: \n \n`;
+
+  // Finally, the reply email body is filled with the body from the original email
+  document.querySelector('#compose-body').value = reply_body_content + email["body"].replace(/^/gm, "\t");
+}
+
